@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
+const key = process.env.MONGOLOCAL;
 
 mongoose
-  .connect("mongodb://localhost:27017/gym-app")
+  .connect(`${key}`)
   .then(() => {
     console.log("conexão bem sucedida!");
   })
