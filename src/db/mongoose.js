@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const key = process.env.MONGOLOCAL;
+const KEY = process.env.MONGOLOCAL;
 
 mongoose
-  .connect(`${key}`)
+  .connect(`${KEY}`)
   .then(() => {
     console.log("conexão bem sucedida!");
   })
