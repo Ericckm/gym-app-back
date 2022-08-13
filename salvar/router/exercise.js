@@ -4,7 +4,7 @@ const Exercise = require("../models/exercise");
 const Log = require("../models/log");
 const router = new express.Router();
 
-router.get("/exercise", auth, async (req, res) => {
+router.get("/exercise", async (req, res) => {
   const exerciseList = await Exercise.find();
   res.send(exerciseList);
 });
@@ -16,6 +16,7 @@ router.get("/exercise/:id", async (req, res) => {
     const exercise = await Exercise.findById(_id);
     const logs = await Log.find({ exerciseId: _id });
     const exerciseWithLogs = { ...exercise.toObject(), logs };
+    // exercise.logs = logs
     if (exercise) {
       return res.send(exerciseWithLogs);
     }
@@ -37,18 +38,15 @@ router.get("/exercise/:id/logs", async (req, res) => {
   }
 });
 
-// ESSA
 router.post("/exercise", auth, async (req, res) => {
-  const exercise = new Exercise({
-    ...req.body,
-    owner: req.user._id,
-  });
-
+  // const exercise = new Exercise(req.body);
+  const exercise = new Exercise({ ...req.body });
+  console.log(exercise);
   try {
     await exercise.save();
-    res.status(201).send({ exercise });
+    res.status(201).json(exercise);
   } catch (e) {
-    res.status(400).send(e);
+    res.status(400).json(e);
   }
 });
 
