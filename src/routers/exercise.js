@@ -9,22 +9,30 @@ router.get("/exercise", auth, async (req, res) => {
   res.send(exerciseList);
 });
 
-router.get("/exercise/:id", async (req, res) => {
+router.get("/exercise/:id", auth, async (req, res) => {
   const _id = req.params.id;
-
-  try {
-    const exercise = await Exercise.findById(_id);
-    const logs = await Log.find({ exerciseId: _id });
-    const exerciseWithLogs = { ...exercise.toObject(), logs };
-    if (exercise) {
-      return res.send(exerciseWithLogs);
-    }
-    console.log(exerciseWithLogs);
-    res.status(404).send();
-  } catch (e) {
-    res.status(500).send();
-  }
+  const exercise = await Exercise.findById(_id);
+  await exercise.populate("log");
+  const exerciseWithLogs = { ...exercise };
+  res.send(exerciseWithLogs);
 });
+
+// router.get("/exercise/:id", async (req, res) => {
+//   const _id = req.params.id;
+
+//   try {
+//     const exercise = await Exercise.findById(_id);
+//     const logs = await Log.find({ exerciseId: _id });
+//     const exerciseWithLogs = { ...exercise.toObject(), logs };
+//     if (exercise) {
+//       return res.send(exerciseWithLogs);
+//     }
+//     console.log(exerciseWithLogs);
+//     res.status(404).send();
+//   } catch (e) {
+//     res.status(500).send();
+//   }
+// });
 
 router.get("/exercise/:id/logs", async (req, res) => {
   const _id = req.params.id;

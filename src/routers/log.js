@@ -20,7 +20,6 @@ router.post("/log", auth, async (req, res) => {
   const log = new Log({
     ...req.body,
   });
-  console.log(req.body);
 
   try {
     await log.save();
