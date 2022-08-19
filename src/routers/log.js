@@ -16,6 +16,7 @@ const router = new express.Router();
 //   res.send(logList);
 // });
 
+// POST LOG REQUIRE EXERCISEOWNER FIELD
 router.post("/log", auth, async (req, res) => {
   const log = new Log({
     ...req.body,

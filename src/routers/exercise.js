@@ -2,50 +2,29 @@ const express = require("express");
 const auth = require("../middleware/auth");
 const Exercise = require("../models/exercise");
 const Log = require("../models/log");
+const User = require("../models/user");
 const router = new express.Router();
 
+// GET ALL EXERCISES BY AUTHENTICATED USER ID
 router.get("/exercise", auth, async (req, res) => {
-  const exerciseList = await Exercise.find();
-  res.send(exerciseList);
+  const exerciseByUser = await User.findById(req.user._id);
+  await exerciseByUser.populate("exercise");
+  const userWithExercise = { ...exerciseByUser };
+  const exercisesFromUser = userWithExercise.$$populatedVirtuals.exercise;
+
+  res.status(200).send(exercisesFromUser);
 });
 
+//GET ALL LOGS FROM EXERCISE ID
 router.get("/exercise/:id", auth, async (req, res) => {
   const _id = req.params.id;
   const exercise = await Exercise.findById(_id);
   await exercise.populate("log");
   const exerciseWithLogs = { ...exercise };
-  res.send(exerciseWithLogs);
+  res.status(200).send(exerciseWithLogs);
 });
 
-// router.get("/exercise/:id", async (req, res) => {
-//   const _id = req.params.id;
-
-//   try {
-//     const exercise = await Exercise.findById(_id);
-//     const logs = await Log.find({ exerciseId: _id });
-//     const exerciseWithLogs = { ...exercise.toObject(), logs };
-//     if (exercise) {
-//       return res.send(exerciseWithLogs);
-//     }
-//     console.log(exerciseWithLogs);
-//     res.status(404).send();
-//   } catch (e) {
-//     res.status(500).send();
-//   }
-// });
-
-router.get("/exercise/:id/logs", async (req, res) => {
-  const _id = req.params.id;
-
-  try {
-    const logs = await Log.find({ exerciseId: _id });
-    return res.send(logs);
-  } catch (e) {
-    res.status(500).send();
-  }
-});
-
-// ESSA
+// POST EXERCISE
 router.post("/exercise", auth, async (req, res) => {
   const exercise = new Exercise({
     ...req.body,
@@ -60,55 +39,66 @@ router.post("/exercise", auth, async (req, res) => {
   }
 });
 
-router.patch("/exercise/:id", async (req, res) => {
-  console.log(req.body);
-  const _id = req.params.id;
-  const updates = Object.keys(req.body);
-  const allowedUpdates = ["name", "videoUrl", "type", "liked", "id"];
-  const isValidOperation = updates.every((update) =>
-    allowedUpdates.includes(update)
-  );
+// router.get("/exercise/:id/logs", async (req, res) => {
+//   const _id = req.params.id;
 
-  if (!isValidOperation) {
-    return res.status(400).send({ error: "Invalid update!" });
-  }
+//   try {
+//     const logs = await Log.find({ exerciseId: _id });
+//     return res.send(logs);
+//   } catch (e) {
+//     res.status(500).send();
+//   }
+// });
 
-  try {
-    const exercise = await Exercise.findById(_id);
+// router.patch("/exercise/:id", async (req, res) => {
+//   console.log(req.body);
+//   const _id = req.params.id;
+//   const updates = Object.keys(req.body);
+//   const allowedUpdates = ["name", "videoUrl", "type", "liked", "id"];
+//   const isValidOperation = updates.every((update) =>
+//     allowedUpdates.includes(update)
+//   );
 
-    if (!exercise) {
-      return res.status(404).send();
-    }
+//   if (!isValidOperation) {
+//     return res.status(400).send({ error: "Invalid update!" });
+//   }
 
-    updates.forEach((update) => (exercise[update] = req.body[update]));
-    await exercise.save();
-    res.send(exercise);
-  } catch (e) {
-    res.status(400).send(e);
-  }
-});
+//   try {
+//     const exercise = await Exercise.findById(_id);
 
-router.put("/exercise/:id", async (req, res) => {
-  try {
-    const _id = req.params.id;
-    const exercise = await Exercise.findById(_id);
-    exercise.liked = !exercise.liked;
-    await exercise.save();
-    console.log(exercise);
-  } catch (e) {
-    res.status(400).send(e);
-  }
-});
+//     if (!exercise) {
+//       return res.status(404).send();
+//     }
 
-router.delete("/exercise/:id", async (req, res) => {
-  try {
-    const _id = req.params.id;
-    const exercise = await Exercise.findById(_id);
-    await exercise.remove();
-    res.send({ data: true });
-  } catch {
-    res.status(404).send({ error: "Exercise not found" });
-  }
-});
+//     updates.forEach((update) => (exercise[update] = req.body[update]));
+//     await exercise.save();
+//     res.send(exercise);
+//   } catch (e) {
+//     res.status(400).send(e);
+//   }
+// });
+
+// router.put("/exercise/:id", async (req, res) => {
+//   try {
+//     const _id = req.params.id;
+//     const exercise = await Exercise.findById(_id);
+//     exercise.liked = !exercise.liked;
+//     await exercise.save();
+//     console.log(exercise);
+//   } catch (e) {
+//     res.status(400).send(e);
+//   }
+// });
+
+// router.delete("/exercise/:id", async (req, res) => {
+//   try {
+//     const _id = req.params.id;
+//     const exercise = await Exercise.findById(_id);
+//     await exercise.remove();
+//     res.send({ data: true });
+//   } catch {
+//     res.status(404).send({ error: "Exercise not found" });
+//   }
+// });
 
 module.exports = router;

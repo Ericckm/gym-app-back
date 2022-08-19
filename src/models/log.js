@@ -6,16 +6,17 @@ const logSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    repetition: {
+    sets: {
       type: Number,
       required: true,
     },
-    series: {
+    reps: {
       type: Number,
       required: true,
     },
-    obs: {
-      type: String,
+    rest: {
+      type: Number,
+      required: true,
     },
     exerciseOwner: {
       type: mongoose.Schema.Types.ObjectId,
