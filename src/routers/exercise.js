@@ -15,6 +15,18 @@ router.get("/exercise", auth, async (req, res) => {
   res.status(200).send(exercisesFromUser);
 });
 
+// GET ALL EXERCISES LIKED FROM AUTHENTICATED USER ID
+router.get("/exerciseLiked", auth, async (req, res) => {
+  const exerciseByUser = await User.findById(req.user._id);
+  await exerciseByUser.populate("exercise");
+  const userWithExercise = { ...exerciseByUser };
+  const exercisesFromUser = userWithExercise.$$populatedVirtuals.exercise;
+  const filteredExercises = await exercisesFromUser.filter(
+    (i) => i.liked === true
+  );
+  res.status(200).send(filteredExercises);
+});
+
 //GET ALL LOGS FROM EXERCISE ID
 router.get("/exercise/:id", auth, async (req, res) => {
   const _id = req.params.id;
