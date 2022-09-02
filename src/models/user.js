@@ -33,6 +33,16 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
+    height: {
+      type: Number,
+      trim: true,
+      default: 0,
+    },
+    weight: {
+      type: Number,
+      trim: true,
+      default: 0,
+    },
     isAdmin: {
       type: Boolean,
       default: false,

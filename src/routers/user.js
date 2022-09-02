@@ -29,14 +29,17 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/logout", auth, async (req, res) => {
+router.patch("/userUpdate", auth, async (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ["name", "weight", "height", "password"];
+  const isValid = updates.every((update) => allowedUpdates.includes(update));
+  if (!isValid) {
+    return res.status(400).send({ error: "Invalid update" });
+  }
   try {
-    req.user.tokens = req.user.tokens.filter((token) => {
-      return token.token !== req.token;
-    });
+    updates.forEach((update) => (req.user[update] = req.body[update]));
     await req.user.save();
-
-    res.send();
+    res.status(201).send(req.user);
   } catch (e) {
     res.status(500).send();
   }
