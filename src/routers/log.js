@@ -3,24 +3,13 @@ const auth = require("../middleware/auth");
 const Log = require("../models/log");
 const router = new express.Router();
 
-// router.get("/logs", auth, async (req, res) => {
-//   const logList = await Log.find().populate("exerciseId").exec();
-
-//   logList.map((log) => {
-//     const empty = [];
-//     const idExerc = log.exerciseId._id;
-
-//     console.log(empty);
-//   });
-
-//   res.send(logList);
-// });
-
 // POST LOG REQUIRE EXERCISEOWNER FIELD
 router.post("/log", auth, async (req, res) => {
   const log = new Log({
     ...req.body,
   });
+
+  console.log(req);
 
   try {
     await log.save();

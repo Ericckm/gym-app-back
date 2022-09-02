@@ -33,7 +33,8 @@ router.get("/exercise/:id", auth, async (req, res) => {
   const exercise = await Exercise.findById(_id);
   await exercise.populate("log");
   const exerciseWithLogs = { ...exercise };
-  res.status(200).send(exerciseWithLogs);
+  const exerciseWithLogsClean = exerciseWithLogs.log;
+  res.status(200).send(exerciseWithLogsClean);
 });
 
 // POST EXERCISE
