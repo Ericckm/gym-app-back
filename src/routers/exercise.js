@@ -103,17 +103,17 @@ router.post("/exercise", auth, async (req, res) => {
 //   }
 // });
 
-// router.put("/exercise/:id", async (req, res) => {
-//   try {
-//     const _id = req.params.id;
-//     const exercise = await Exercise.findById(_id);
-//     exercise.liked = !exercise.liked;
-//     await exercise.save();
-//     console.log(exercise);
-//   } catch (e) {
-//     res.status(400).send(e);
-//   }
-// });
+router.put("/exercise/:id", async (req, res) => {
+  try {
+    const _id = req.params.id;
+    const exercise = await Exercise.findById(_id);
+    exercise.liked = !exercise.liked;
+    await exercise.save();
+    res.status(201).send(exercise);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
 
 // router.delete("/exercise/:id", async (req, res) => {
 //   try {
