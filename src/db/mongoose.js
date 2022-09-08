@@ -4,8 +4,8 @@ const KEY = process.env.MONGOLOCAL;
 mongoose
   .connect(`${KEY}`)
   .then(() => {
-    console.log("conexão bem sucedida!");
+    console.log("Success connecting to DB!");
   })
   .catch((error) => {
-    console.log("Falha ao conectar-se ao banco", error);
+    console.log("Failure connecting to DB", error);
   });

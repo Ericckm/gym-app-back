@@ -9,13 +9,10 @@ router.post("/log", auth, async (req, res) => {
     ...req.body,
   });
 
-  console.log(req);
-
   try {
     await log.save();
     res.status(201).json(log);
   } catch (e) {
-    console.log(e);
     res.status(400).send(e);
   }
 });

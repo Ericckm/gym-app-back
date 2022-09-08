@@ -39,18 +39,19 @@ router.get("/exercises", auth, async (req, res) => {
   res.status(200).send(filteredExercises);
 });
 
-//GET ALL LOGS FROM EXERCISE ID
+//GET LAST LOG FROM EXERCISE ID
 router.get("/exercise/:id", auth, async (req, res) => {
   const _id = req.params.id;
   const exercise = await Exercise.findById(_id);
   await exercise.populate("log");
   const exerciseWithLogs = { ...exercise };
   const exerciseWithLogsClean = exerciseWithLogs.log;
-  res.status(200).send(exerciseWithLogsClean);
+  const lastLog = exerciseWithLogsClean.slice(-1);
+  res.status(200).send(lastLog);
 });
 
 // POST EXERCISE
-router.post("/exercise", auth, async (req, res) => {
+router.post("/addExercise", auth, async (req, res) => {
   const exercise = new Exercise({
     ...req.body,
     owner: req.user._id,
