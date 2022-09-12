@@ -1,7 +1,6 @@
 const express = require("express");
 const auth = require("../middleware/auth");
 const Exercise = require("../models/exercise");
-const Log = require("../models/log");
 const User = require("../models/user");
 const router = new express.Router();
 
@@ -39,17 +38,6 @@ router.get("/exercises", auth, async (req, res) => {
   res.status(200).send(filteredExercises);
 });
 
-//GET LAST LOG FROM EXERCISE ID
-router.get("/exercise/:id", auth, async (req, res) => {
-  const _id = req.params.id;
-  const exercise = await Exercise.findById(_id);
-  await exercise.populate("log");
-  const exerciseWithLogs = { ...exercise };
-  const exerciseWithLogsClean = exerciseWithLogs.log;
-  const lastLog = exerciseWithLogsClean.slice(-1);
-  res.status(200).send(lastLog);
-});
-
 // POST EXERCISE
 router.post("/addExercise", auth, async (req, res) => {
   const exercise = new Exercise({
@@ -64,45 +52,6 @@ router.post("/addExercise", auth, async (req, res) => {
     res.status(400).send(e);
   }
 });
-
-// router.get("/exercise/:id/logs", async (req, res) => {
-//   const _id = req.params.id;
-
-//   try {
-//     const logs = await Log.find({ exerciseId: _id });
-//     return res.send(logs);
-//   } catch (e) {
-//     res.status(500).send();
-//   }
-// });
-
-// router.patch("/exercise/:id", async (req, res) => {
-//   console.log(req.body);
-//   const _id = req.params.id;
-//   const updates = Object.keys(req.body);
-//   const allowedUpdates = ["name", "videoUrl", "type", "liked", "id"];
-//   const isValidOperation = updates.every((update) =>
-//     allowedUpdates.includes(update)
-//   );
-
-//   if (!isValidOperation) {
-//     return res.status(400).send({ error: "Invalid update!" });
-//   }
-
-//   try {
-//     const exercise = await Exercise.findById(_id);
-
-//     if (!exercise) {
-//       return res.status(404).send();
-//     }
-
-//     updates.forEach((update) => (exercise[update] = req.body[update]));
-//     await exercise.save();
-//     res.send(exercise);
-//   } catch (e) {
-//     res.status(400).send(e);
-//   }
-// });
 
 router.put("/exercise/:id", async (req, res) => {
   try {
