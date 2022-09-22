@@ -25,12 +25,16 @@ const exerciseSchema = new mongoose.Schema(
       ref: "User",
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
 const Exercise = mongoose.model("Exercise", exerciseSchema);
 
-exerciseSchema.virtual("log", {
+exerciseSchema.virtual("logs", {
   ref: "Log",
   localField: "_id",
   foreignField: "exerciseOwner",

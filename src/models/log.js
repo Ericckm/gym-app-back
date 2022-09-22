@@ -18,6 +18,9 @@ const logSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    obs: {
+      type: String,
+    },
     exerciseOwner: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,

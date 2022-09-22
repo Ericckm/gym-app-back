@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Exercise = require("./exercise");
 
 const userSchema = new mongoose.Schema(
   {
@@ -58,6 +59,8 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 
@@ -91,7 +94,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 
 // virtual reference between two collections mongoose
 
-userSchema.virtual("exercise", {
+userSchema.virtual("exercises", {
   ref: "Exercise",
   localField: "_id",
   foreignField: "owner",
@@ -107,6 +110,31 @@ userSchema.pre("save", async function (next) {
 
   next();
 });
+
+// userSchema.pre("save", async function (next) {
+//   const user = this;
+//   const token = await user.generateAuthToken();
+//   const testexec = {
+//     name: "Cadeira abdultora",
+//     videoUrl: "https://www.youtube.com/watch?v=yVZ0Vs7j6EM",
+//     type: "Leg",
+//     liked: "true",
+//     exerciseOnwer: user._id,
+//   };
+//   const requestOptions = {
+//     method: "POST",
+//     headers: { Authorization: token },
+//     body: { ...testexec },
+//   };
+
+//   const response = await fetch(
+//     "http://localhost:2500/addExercise",
+//     requestOptions
+//   );
+//   console.log(response);
+
+//   next();
+// });
 
 const User = mongoose.model("User", userSchema);
 

@@ -1,41 +1,60 @@
 const express = require("express");
 const auth = require("../middleware/auth");
 const Exercise = require("../models/exercise");
+const Log = require("../models/log");
 const User = require("../models/user");
 const router = new express.Router();
 
-// GET ALL EXERCISES BY AUTHENTICATED USER ID
-router.get("/exercise", auth, async (req, res) => {
-  const exerciseByUser = await User.findById(req.user._id);
-  await exerciseByUser.populate("exercise");
-  const userWithExercise = { ...exerciseByUser };
-  const exercisesFromUser = userWithExercise.$$populatedVirtuals.exercise;
-
-  res.status(200).send(exercisesFromUser);
-});
-
-// GET ALL EXERCISES LIKED FROM AUTHENTICATED USER ID
+// GET EXERCISES LIKED FROM AUTH USER
 router.get("/exerciseLiked", auth, async (req, res) => {
-  const exerciseByUser = await User.findById(req.user._id);
-  await exerciseByUser.populate("exercise");
-  const userWithExercise = { ...exerciseByUser };
-  const exercisesFromUser = userWithExercise.$$populatedVirtuals.exercise;
-  const filteredExercises = await exercisesFromUser.filter(
-    (i) => i.liked === true
-  );
+  const user = await User.findById(req.user._id).populate({
+    path: "exercises",
+  });
+  const exercises = user.exercises;
+  const filteredExercises = await exercises.filter((i) => i.liked === true);
+
   res.status(200).send(filteredExercises);
 });
 
-// GET ALL EXERCISES EXECPT LIKED
+// GET EXERCISES NOT LIKED FROM AUTH USER
 router.get("/exercises", auth, async (req, res) => {
-  const exerciseByUser = await User.findById(req.user._id);
-  await exerciseByUser.populate("exercise");
-  const userWithExercise = { ...exerciseByUser };
-  const exercisesFromUser = userWithExercise.$$populatedVirtuals.exercise;
-  const filteredExercises = await exercisesFromUser.filter(
-    (i) => i.liked === false
-  );
+  const user = await User.findById(req.user._id).populate({
+    path: "exercises",
+  });
+  const exercises = user.exercises;
+  const filteredExercises = await exercises.filter((i) => i.liked === false);
+
   res.status(200).send(filteredExercises);
+});
+
+// GET EXERCISES THAT INCLUDES LOGS FROM AUTHENTICATED USER ID
+router.get("/exercise/logs", auth, async (req, res) => {
+  const logs = await Log.find();
+  // const exerciseIds = logs.reduce((i) => i.exerciseOwner);
+  // console.log("ids", exerciseIds);
+  function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+  const unique = logs.filter(onlyUnique);
+
+  console.log("test", unique);
+
+  // const exercisesWithLog = await logs.map((log) => {
+  //   Exercise.findById(log.exerciseOwner);
+  // });
+
+  // console.log(exercisesWithLog);
+
+  //console.log(exercises);
+
+  res.status(200).send();
+
+  // const exercise = await Exercise.findById(_id);
+  // await exercise.populate("log");
+  // const exerciseWithLogs = { ...exercise };
+  // const exerciseWithLogsClean = exerciseWithLogs.log;
+  // console.log(exerciseWithLogsClean);
+  // res.status(200).send(exerciseWithLogsClean);
 });
 
 // POST EXERCISE
@@ -53,6 +72,7 @@ router.post("/addExercise", auth, async (req, res) => {
   }
 });
 
+// UPDATE EXERCISE LIKED
 router.put("/exercise/:id", async (req, res) => {
   try {
     const _id = req.params.id;
