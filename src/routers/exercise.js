@@ -27,36 +27,6 @@ router.get("/exercises", auth, async (req, res) => {
   res.status(200).send(filteredExercises);
 });
 
-// GET EXERCISES THAT INCLUDES LOGS FROM AUTHENTICATED USER ID
-router.get("/exercise/logs", auth, async (req, res) => {
-  const logs = await Log.find();
-  // const exerciseIds = logs.reduce((i) => i.exerciseOwner);
-  // console.log("ids", exerciseIds);
-  function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
-  const unique = logs.filter(onlyUnique);
-
-  console.log("test", unique);
-
-  // const exercisesWithLog = await logs.map((log) => {
-  //   Exercise.findById(log.exerciseOwner);
-  // });
-
-  // console.log(exercisesWithLog);
-
-  //console.log(exercises);
-
-  res.status(200).send();
-
-  // const exercise = await Exercise.findById(_id);
-  // await exercise.populate("log");
-  // const exerciseWithLogs = { ...exercise };
-  // const exerciseWithLogsClean = exerciseWithLogs.log;
-  // console.log(exerciseWithLogsClean);
-  // res.status(200).send(exerciseWithLogsClean);
-});
-
 // POST EXERCISE
 router.post("/addExercise", auth, async (req, res) => {
   const exercise = new Exercise({
@@ -95,5 +65,33 @@ router.put("/exercise/:id", async (req, res) => {
 //     res.status(404).send({ error: "Exercise not found" });
 //   }
 // });
+
+// GET EXERCISES THAT INCLUDES LOGS FROM AUTHENTICATED USER ID
+// router.get("/exercise/logs", auth, async (req, res) => {
+//   const exercises = await Exercise.find();
+//   const allExercises = exercises.map((i) => i.populate({ path: "logs" }));
+
+//   await Promise.all(allExercises);
+
+//   console.log(exercises);
+//   res.status(200).send();
+// });
+
+// GET ALL EXERCISES THAT INCLUDES LOGS FROM AUTHENTICATED USER ID
+router.get("/exerciseWithLogs", auth, async (req, res) => {
+  const logs = await Log.find();
+
+  const uniqueExecIdMap = {};
+  for (const log of logs) {
+    uniqueExecIdMap[log.exerciseOwner] = log;
+  }
+
+  const uniqueExercises = Object.values(uniqueExecIdMap);
+  const exercises = await Exercise.find({
+    _id: { $in: uniqueExercises.map((log) => log.exerciseOwner) },
+  });
+
+  res.status(200).send(exercises);
+});
 
 module.exports = router;
