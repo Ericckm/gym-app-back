@@ -13,11 +13,15 @@ router.post("/register", async (req, res) => {
     const token = await user.generateAuthToken();
 
     await initialExercisesDB.forEach((obj) => {
-      axios.post(`http://localhost:2500/addExercise`, obj, {
-        headers: {
-          Authorization: token,
-        },
-      });
+      axios.post(
+        `https://gym-app-back-production.up.railway.app/addExercise`,
+        obj,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
     });
 
     res.status(201).send({ user, token });
