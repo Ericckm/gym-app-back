@@ -110,31 +110,6 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// userSchema.pre("save", async function (next) {
-//   const user = this;
-//   const token = await user.generateAuthToken();
-//   const testexec = {
-//     name: "Cadeira abdultora",
-//     videoUrl: "https://www.youtube.com/watch?v=yVZ0Vs7j6EM",
-//     type: "Leg",
-//     liked: "true",
-//     exerciseOnwer: user._id,
-//   };
-//   const requestOptions = {
-//     method: "POST",
-//     headers: { Authorization: token },
-//     body: { ...testexec },
-//   };
-
-//   const response = await fetch(
-//     "http://localhost:2500/addExercise",
-//     requestOptions
-//   );
-//   console.log(response);
-
-//   next();
-// });
-
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

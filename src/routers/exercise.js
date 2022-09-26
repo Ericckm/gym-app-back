@@ -59,7 +59,6 @@ router.put("/exercise/:id", async (req, res) => {
 router.get("/exerciseWithLogs", auth, async (req, res) => {
   const logs = await Log.find();
   const user = req.user;
-  console.log(user);
 
   const uniqueExecIdMap = {};
   for (const log of logs) {
@@ -74,7 +73,6 @@ router.get("/exerciseWithLogs", auth, async (req, res) => {
   });
 
   const execUser = await exercises.filter((exec) => exec.owner == user.id);
-  console.log(execUser);
 
   res.status(200).send(execUser);
 });
