@@ -248,4 +248,4 @@ const initialExercisesDB = [
   },
 ];
 
-https: module.exports = { initialExercisesDB };
+module.exports = { initialExercisesDB };
