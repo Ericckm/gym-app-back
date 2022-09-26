@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const KEY = process.env.MONGOLOCAL;
+const KEY = process.env.MONGOATLAS;
 
 mongoose
   .connect(`${KEY}`)
